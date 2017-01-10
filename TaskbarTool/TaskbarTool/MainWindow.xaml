@@ -1,0 +1,59 @@
+﻿<Window x:Class="TaskbarTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TaskbarTool"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        mc:Ignorable="d"
+        Title="Taskbar Tools" 
+        Height="160" Width="370" 
+        MinHeight="160" MinWidth="370"
+        Icon="Resources/Mushroom1UP.ico"
+        ContentRendered="Window_ContentRendered" Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Grid x:Name="AccentPolicyGrid" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="AccentStateLabel" Content="Accent State" Grid.Column="0"
+                   HorizontalAlignment="Right" VerticalAlignment="Top" 
+                   HorizontalContentAlignment="Right"
+                   Margin="0,10,0,0"/>
+            <Label x:Name="GradientColorLabel" Content="Gradient Color" Grid.Column="0"
+                   HorizontalAlignment="Right" VerticalAlignment="Top" 
+                   HorizontalContentAlignment="Right"
+                   Margin="0,37,0,0"/>
+            <Label x:Name="ColorizeBlurLabel" Content="Colorize" Grid.Column="0"
+                   HorizontalAlignment="Right" VerticalAlignment="Top" 
+                   HorizontalContentAlignment="Right"
+                   Margin="0,63,0,0"/>
+
+            <ComboBox x:Name="AccentStateComboBox" Grid.Column="1"
+                      HorizontalAlignment="Stretch" VerticalAlignment="Top" 
+                      Margin="0,14,10,0" 
+                      SelectionChanged="AccentStateComboBox_SelectionChanged" />
+            <xctk:ColorPicker x:Name="GradientColorPicker" Grid.Column="1"
+                              HorizontalAlignment="Left" VerticalAlignment="Top"
+                              Margin="0,41,0,0" Width="50" 
+                              ColorMode="ColorCanvas" 
+                              ShowDropDownButton="False" 
+                              ShowAdvancedButton="False"
+                              SelectedColorChanged="GradientColorPicker_SelectedColorChanged"/>
+            <CheckBox x:Name="ColorizeBlueCheckBox" Grid.Column="1" Content=""
+                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Margin="0,69,0,0" 
+                      Checked="ColorizeBlueCheckBox_Changed"
+                      Unchecked="ColorizeBlueCheckBox_Changed"/>
+        </Grid>
+        <Button x:Name="StartStopButton" Content="Start" Grid.Row="1"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                    Margin="0,0,10,10" Width="75" 
+                    Click="StartStopButton_Click"/>
+    </Grid>
+</Window>
