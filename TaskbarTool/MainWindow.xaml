@@ -8,8 +8,8 @@
         xmlns:properties="clr-namespace:TaskbarTool.Properties"
         mc:Ignorable="d"
         Title="Taskbar Tools" 
-        Height="160" Width="370" 
-        MinHeight="160" MinWidth="370"
+        Height="190" Width="370" 
+        MinHeight="190" MinWidth="400"
         Icon="Resources/Mushroom1UP.ico"
         ContentRendered="Window_ContentRendered" Closing="Window_Closing">
     <Window.Resources>
@@ -29,7 +29,7 @@
         </Grid.RowDefinitions>
         <Grid x:Name="AccentPolicyGrid" Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="140"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Label x:Name="AccentStateLabel" Content="Accent State" Grid.Column="0"
@@ -44,6 +44,10 @@
                    HorizontalAlignment="Right" VerticalAlignment="Top" 
                    HorizontalContentAlignment="Right"
                    Margin="0,63,0,0"/>
+            <Label x:Name="WindowsAccentOpacityLabel" Content="Windows Accent Alpha" Grid.Column="0"
+                   HorizontalAlignment="Right" VerticalAlignment="Top" 
+                   HorizontalContentAlignment="Right"
+                   Margin="0,86,250,0" Grid.ColumnSpan="2"/>
 
             <ComboBox x:Name="AccentStateComboBox" Grid.Column="1"
                       HorizontalAlignment="Stretch" VerticalAlignment="Top" 
@@ -61,6 +65,17 @@
                       Margin="0,69,0,0" 
                       Checked="ColorizeBlurCheckBox_Changed"
                       Unchecked="ColorizeBlurCheckBox_Changed"/>
+            <CheckBox x:Name="WindowsAccentColorCheckBox" Grid.Column="1" Content="Use Windows Accent Colour"
+                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Margin="55,43,0,0" 
+                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseWindowsAccentColor}"
+                      Checked="WindowsAccentColorCheckBox_Changed"
+                      Unchecked="WindowsAccentColorCheckBox_Changed"/>
+            <xctk:IntegerUpDown x:Name="WindowsAccentAlpha" Grid.Column="1"
+                                HorizontalAlignment="Left" VerticalAlignment="Top"
+                                Margin="2,89,0,0" Width="60"
+                                Value="{Binding Source={x:Static properties:Settings.Default}, Path=WindowsAccentAlpha}" 
+                                Maximum="255" Minimum="0"/>
         </Grid>
         <Grid x:Name="OptionsGrid" Grid.Row="1">
         </Grid>

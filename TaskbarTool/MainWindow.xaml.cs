@@ -78,8 +78,10 @@ namespace TaskbarTool
         #endregion Structs
 
         #region Declarations
+        static Task WindowsAccentColorTask;
+        static bool RunAccentTask = false;
         static Task ApplyTask;
-        static bool RunTask = false;
+        static bool RunApplyTask = false;
         static AccentPolicy accentPolicy = new AccentPolicy();
         static System.Windows.Forms.NotifyIcon SysTrayIcon;
         ContextMenu SysTrayContextMenu;
@@ -168,6 +170,8 @@ namespace TaskbarTool
         {
             SysTrayIcon.Dispose();
             SaveSettings();
+            RunAccentTask = false;
+            RunApplyTask = false;
         }
 
         private void CloseMainWindow(object sender, RoutedEventArgs e)
@@ -194,7 +198,7 @@ namespace TaskbarTool
                 else { hWndList.Add(otherBars); }
             }
 
-            while (RunTask)
+            while (RunApplyTask)
             {
                 foreach (IntPtr hWnd in hWndList)
                 {
@@ -218,20 +222,28 @@ namespace TaskbarTool
             Marshal.FreeHGlobal(policyPtr);
         }
 
+        private void GetWindowsAccentColorLoop()
+        {
+            while (RunAccentTask) {
+                accentPolicy.GradientColor = WindowsAccentColor.GetColorAsInt();
+                Thread.Sleep(900);
+            }
+        }
+
         #endregion Functions
 
         #region Control Handles
         private void StartStopButton_Click(object sender, RoutedEventArgs e)
         {
-            if (RunTask)
+            if (RunApplyTask)
             {
                 StartStopButton.Content = "Start";
-                RunTask = false;
+                RunApplyTask = false;
             }
             else
             {
                 StartStopButton.Content = "Stop";
-                RunTask = true;
+                RunApplyTask = true;
                 ApplyTask = new Task(() => ApplyToAllTaskbars());
                 ApplyTask.Start();
             }
@@ -264,6 +276,59 @@ namespace TaskbarTool
                 this.Activate();
             }
         }
+
+        private void WindowsAccentColorCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (WindowsAccentColorCheckBox.IsChecked == true)
+            {
+                GradientColorPicker.IsEnabled = false;
+                RunAccentTask = true;
+                WindowsAccentColorTask = new Task(() => GetWindowsAccentColorLoop());
+                WindowsAccentColorTask.Start();
+            }
+            else
+            {
+                RunAccentTask = false;
+                GradientColorPicker.IsEnabled = true;
+            }
+        }
+
         #endregion Control Handles
     }
+
+    #region Helper Classes
+    public static class WindowsAccentColor
+    {
+        private static Color accentColor = Color.FromArgb(255, 0, 0, 0);
+        private static DateTime lastUpdateTime;
+        private static TimeSpan timeSinceLastUpdate;
+
+        public static Color GetColor()
+        {
+            timeSinceLastUpdate = DateTime.Now - lastUpdateTime;
+            if (timeSinceLastUpdate.TotalSeconds > 1)
+            { UpdateColor(); }
+
+            return accentColor;
+        }
+
+        public static int GetColorAsInt()
+        {
+            Color color = GetColor();
+
+            return BitConverter.ToInt32(new byte[] { color.R, color.G, color.B, Properties.Settings.Default.WindowsAccentAlpha }, 0);
+        }
+
+        private static void UpdateColor()
+        {
+            string keyName = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent";
+            int keyColor = (int)Microsoft.Win32.Registry.GetValue(keyName, "StartColorMenu", 00000000);
+
+            byte[] bytes = BitConverter.GetBytes(keyColor);
+
+            lastUpdateTime = DateTime.Now;
+            accentColor = Color.FromArgb(bytes[3], bytes[0], bytes[1], bytes[2]);
+        }
+    }
+    #endregion Helper Classes
 }

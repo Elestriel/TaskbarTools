@@ -82,5 +82,29 @@ namespace TaskbarTool.Properties {
                 this["StartWhenLaunched"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseWindowsAccentColor {
+            get {
+                return ((bool)(this["UseWindowsAccentColor"]));
+            }
+            set {
+                this["UseWindowsAccentColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("255")]
+        public byte WindowsAccentAlpha {
+            get {
+                return ((byte)(this["WindowsAccentAlpha"]));
+            }
+            set {
+                this["WindowsAccentAlpha"] = value;
+            }
+        }
     }
 }
