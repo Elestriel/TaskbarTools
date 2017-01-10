@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace TaskbarTool
@@ -81,6 +82,7 @@ namespace TaskbarTool
         static bool RunTask = false;
         static AccentPolicy accentPolicy = new AccentPolicy();
         static System.Windows.Forms.NotifyIcon SysTrayIcon;
+        ContextMenu SysTrayContextMenu;
         #endregion Declarations
 
         #region Initializations
@@ -88,10 +90,13 @@ namespace TaskbarTool
         {
             InitializeComponent();
 
+            SysTrayContextMenu = this.FindResource("TrayContextMenu") as ContextMenu;
+
             SysTrayIcon = new System.Windows.Forms.NotifyIcon();
-            Stream iconStream = Application.GetResourceStream(new Uri("pack://application:,,,/TaskbarTool;component/Resources/Mushroom1UP.ico")).Stream;
+            Stream iconStream = Application.GetResourceStream(new Uri("Resources/Mushroom1UP.ico", UriKind.Relative)).Stream;
             SysTrayIcon.Icon = new System.Drawing.Icon(iconStream);
             SysTrayIcon.Visible = true;
+            SysTrayIcon.MouseClick += SysTrayIcon_MouseClick;
             SysTrayIcon.DoubleClick += 
                 delegate (object sender, EventArgs args)
                 {
@@ -111,6 +116,7 @@ namespace TaskbarTool
         private void PopulateComboBoxes()
         {
             AccentStateComboBox.ItemsSource = Enum.GetValues(typeof(AccentState)).Cast<AccentState>();
+            AccentStateComboBox.SelectedIndex = 0;
         }
 
         private void LoadSettings()
@@ -123,8 +129,11 @@ namespace TaskbarTool
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error loading settings.");
-                Console.WriteLine(ex.Message);
+                AccentStateComboBox.SelectedIndex = 0;
+                GradientColorPicker.SelectedColor = Color.FromArgb(127, 64, 127, 255);
+                ColorizeBlurCheckBox.IsChecked = true;
+
+                MessageBox.Show(ex.Message, "Error loading settings.");
             }
         }
 
@@ -155,6 +164,11 @@ namespace TaskbarTool
         {
             SysTrayIcon.Dispose();
             SaveSettings();
+        }
+
+        private void CloseMainWindow(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
         #endregion Destructors
 
@@ -216,7 +230,7 @@ namespace TaskbarTool
             }
         }
 
-        private void AccentStateComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void AccentStateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             accentPolicy.AccentState = (AccentState)AccentStateComboBox.SelectedItem;
         }
@@ -231,6 +245,17 @@ namespace TaskbarTool
         {
             if (ColorizeBlurCheckBox.IsChecked == true) { accentPolicy.AccentFlags = 2; }
             else { accentPolicy.AccentFlags = 0; }
+        }
+
+        private void SysTrayIcon_MouseClick(object sender, EventArgs e)
+        {
+            System.Windows.Forms.MouseEventArgs me = (System.Windows.Forms.MouseEventArgs)e;
+            if (me.Button == System.Windows.Forms.MouseButtons.Right)
+            {
+                SysTrayContextMenu.PlacementTarget = sender as Button;
+                SysTrayContextMenu.IsOpen = true;
+                this.Activate();
+            }
         }
         #endregion Control Handles
     }

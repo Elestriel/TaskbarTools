@@ -11,6 +11,16 @@
         MinHeight="160" MinWidth="370"
         Icon="Resources/Mushroom1UP.ico"
         ContentRendered="Window_ContentRendered" Closing="Window_Closing">
+    <Window.Resources>
+        <!-- Tray Icon ContextMenu -->
+        <ContextMenu x:Key="TrayContextMenu">
+            <ContextMenu.Items>
+                <MenuItem x:Name="SysTrayStartStopButton" Header="Pause/Resume" Click="StartStopButton_Click"/>
+                <Separator/>
+                <MenuItem x:Name="SysTrayQuitButton" Header="Quit" IsEnabled="True" Click="CloseMainWindow"/>
+            </ContextMenu.Items>
+        </ContextMenu>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
