@@ -100,12 +100,6 @@ namespace TaskbarTool
                 };
         }
 
-        private void PopulateComboBoxes()
-        {
-            AccentStateComboBox.ItemsSource = Enum.GetValues(typeof(AccentState)).Cast<AccentState>();
-            AccentStateComboBox.SelectedIndex = 0;
-        }
-
         protected override void OnStateChanged(EventArgs e)
         {
             if (WindowState == WindowState.Minimized)
@@ -114,9 +108,45 @@ namespace TaskbarTool
             base.OnStateChanged(e);
         }
 
+        private void PopulateComboBoxes()
+        {
+            AccentStateComboBox.ItemsSource = Enum.GetValues(typeof(AccentState)).Cast<AccentState>();
+        }
+
+        private void LoadSettings()
+        {
+            try
+            {
+                AccentStateComboBox.SelectedItem = (AccentState)Properties.Settings.Default.AccentState;
+                GradientColorPicker.SelectedColor = (Color)ColorConverter.ConvertFromString(Properties.Settings.Default.GradientColor);
+                ColorizeBlurCheckBox.IsChecked = Properties.Settings.Default.Colorize;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading settings.");
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void SaveSettings()
+        {
+            try
+            {
+                Properties.Settings.Default.AccentState = (int)AccentStateComboBox.SelectedItem;
+                Properties.Settings.Default.GradientColor = GradientColorPicker.SelectedColor.ToString();
+                Properties.Settings.Default.Colorize = ColorizeBlurCheckBox.IsChecked ?? false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error saving settings.");
+                Console.WriteLine(ex.Message);
+            }
+        }
+
         private void Window_ContentRendered(object sender, EventArgs e)
         {
             PopulateComboBoxes();
+            LoadSettings();
         }
         #endregion Initializations
 
@@ -124,6 +154,7 @@ namespace TaskbarTool
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             SysTrayIcon.Dispose();
+            SaveSettings();
         }
         #endregion Destructors
 
@@ -196,9 +227,9 @@ namespace TaskbarTool
             accentPolicy.GradientColor = BitConverter.ToInt32(new byte[] { gradientColor.R, gradientColor.G, gradientColor.B, gradientColor.A }, 0);
         }
 
-        private void ColorizeBlueCheckBox_Changed(object sender, RoutedEventArgs e)
+        private void ColorizeBlurCheckBox_Changed(object sender, RoutedEventArgs e)
         {
-            if (ColorizeBlueCheckBox.IsChecked == true) { accentPolicy.AccentFlags = 2; }
+            if (ColorizeBlurCheckBox.IsChecked == true) { accentPolicy.AccentFlags = 2; }
             else { accentPolicy.AccentFlags = 0; }
         }
         #endregion Control Handles

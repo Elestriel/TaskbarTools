@@ -14,7 +14,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="32"/>
         </Grid.RowDefinitions>
         <Grid x:Name="AccentPolicyGrid" Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -45,11 +45,11 @@
                               ShowDropDownButton="False" 
                               ShowAdvancedButton="False"
                               SelectedColorChanged="GradientColorPicker_SelectedColorChanged"/>
-            <CheckBox x:Name="ColorizeBlueCheckBox" Grid.Column="1" Content=""
+            <CheckBox x:Name="ColorizeBlurCheckBox" Grid.Column="1" Content=""
                       HorizontalAlignment="Left" VerticalAlignment="Top"
                       Margin="0,69,0,0" 
-                      Checked="ColorizeBlueCheckBox_Changed"
-                      Unchecked="ColorizeBlueCheckBox_Changed"/>
+                      Checked="ColorizeBlurCheckBox_Changed"
+                      Unchecked="ColorizeBlurCheckBox_Changed"/>
         </Grid>
         <Button x:Name="StartStopButton" Content="Start" Grid.Row="1"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom" 
