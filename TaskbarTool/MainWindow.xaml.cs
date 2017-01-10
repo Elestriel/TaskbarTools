@@ -156,6 +156,10 @@ namespace TaskbarTool
         {
             PopulateComboBoxes();
             LoadSettings();
+
+            if (Properties.Settings.Default.StartMinimized) { this.WindowState = WindowState.Minimized; }
+            if (Properties.Settings.Default.StartWhenLaunched) { StartStopButton_Click(null, null); }
+
         }
         #endregion Initializations
 
@@ -179,6 +183,9 @@ namespace TaskbarTool
 
             hWndList.Add(FindWindow("Shell_TrayWnd", null));
             IntPtr otherBars = IntPtr.Zero;
+
+            //IntPtr cortana = FindWindowEx(hWndList[0], IntPtr.Zero, "TrayDummySearchControl", null);
+            //hWndList.Add(cortana);
 
             while (true)
             {
