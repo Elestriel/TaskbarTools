@@ -144,11 +144,11 @@ namespace TaskbarTool
                 Properties.Settings.Default.AccentState = (int)AccentStateComboBox.SelectedItem;
                 Properties.Settings.Default.GradientColor = GradientColorPicker.SelectedColor.ToString();
                 Properties.Settings.Default.Colorize = ColorizeBlurCheckBox.IsChecked ?? false;
+                Properties.Settings.Default.Save();
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error saving settings.");
-                Console.WriteLine(ex.Message);
+                MessageBox.Show(ex.Message, "Error saving settings.");
             }
         }
 
