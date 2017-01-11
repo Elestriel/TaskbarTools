@@ -71,11 +71,12 @@
                       IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseWindowsAccentColor}"
                       Checked="WindowsAccentColorCheckBox_Changed"
                       Unchecked="WindowsAccentColorCheckBox_Changed"/>
-            <xctk:IntegerUpDown x:Name="WindowsAccentAlpha" Grid.Column="1"
-                                HorizontalAlignment="Left" VerticalAlignment="Top"
-                                Margin="2,89,0,0" Width="60"
-                                Value="{Binding Source={x:Static properties:Settings.Default}, Path=WindowsAccentAlpha}" 
-                                Maximum="255" Minimum="0"/>
+            <Slider x:Name="WindowsAccentAlphaSlider" Grid.Column="1"
+                    HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                    Margin="10,92,10,0" Minimum="0" Maximum="255" Value="{Binding Source={x:Static properties:Settings.Default}, Path=WindowsAccentAlpha}"
+                    Thumb.DragCompleted="WindowsAccentAlphaSlider_DragCompleted"
+                    Thumb.DragStarted="WindowsAccentAlphaSlider_DragStarted"
+                    ValueChanged="WindowsAccentAlphaSlider_ValueChanged"/>
         </Grid>
         <Grid x:Name="OptionsGrid" Grid.Row="1">
         </Grid>

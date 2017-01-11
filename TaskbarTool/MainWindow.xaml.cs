@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
 
 namespace TaskbarTool
@@ -25,6 +26,9 @@ namespace TaskbarTool
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string lclassName, string windowTitle);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern uint RegisterWindowMessage(string msgString);
         #endregion Invokes
 
         #region Enums
@@ -78,13 +82,20 @@ namespace TaskbarTool
         #endregion Structs
 
         #region Declarations
-        static Task WindowsAccentColorTask;
-        static bool RunAccentTask = false;
+        // Worker thread
         static Task ApplyTask;
         static bool RunApplyTask = false;
-        static AccentPolicy accentPolicy = new AccentPolicy();
+        public static bool FindTaskbarHandles = true;
+        
         static System.Windows.Forms.NotifyIcon SysTrayIcon;
         ContextMenu SysTrayContextMenu;
+        
+        private static bool alphaDragStarted = false;
+
+        static AccentPolicy accentPolicy = new AccentPolicy();
+        
+        private static readonly uint WM_TASKBARCREATED = RegisterWindowMessage("TaskbarCreated");
+        private const uint WM_DWMCOLORIZATIONCOLORCHANGED = 0x0320;
         #endregion Declarations
 
         #region Initializations
@@ -162,6 +173,7 @@ namespace TaskbarTool
             if (Properties.Settings.Default.StartMinimized) { this.WindowState = WindowState.Minimized; }
             if (Properties.Settings.Default.StartWhenLaunched) { StartStopButton_Click(null, null); }
 
+            //ProcessWatcher.Process.Start();
         }
         #endregion Initializations
 
@@ -170,7 +182,6 @@ namespace TaskbarTool
         {
             SysTrayIcon.Dispose();
             SaveSettings();
-            RunAccentTask = false;
             RunApplyTask = false;
         }
 
@@ -184,33 +195,38 @@ namespace TaskbarTool
         private void ApplyToAllTaskbars()
         {
             List<IntPtr> hWndList = new List<IntPtr>();
-
-            hWndList.Add(FindWindow("Shell_TrayWnd", null));
-            IntPtr otherBars = IntPtr.Zero;
-
-            //IntPtr cortana = FindWindowEx(hWndList[0], IntPtr.Zero, "TrayDummySearchControl", null);
-            //hWndList.Add(cortana);
-
-            while (true)
-            {
-                otherBars = FindWindowEx(IntPtr.Zero, otherBars, "Shell_SecondaryTrayWnd", "");
-                if (otherBars == IntPtr.Zero) { break; }
-                else { hWndList.Add(otherBars); }
-            }
-
+            
             while (RunApplyTask)
             {
+                if (FindTaskbarHandles || ProcessWatcher.Process.NewExplorerStarted)
+                {
+                    hWndList.Add(FindWindow("Shell_TrayWnd", null));
+                    IntPtr otherBars = IntPtr.Zero;
+
+                    //IntPtr cortana = FindWindowEx(hWndList[0], IntPtr.Zero, "TrayDummySearchControl", null);
+                    //hWndList.Add(cortana);
+
+                    while (true)
+                    {
+                        otherBars = FindWindowEx(IntPtr.Zero, otherBars, "Shell_SecondaryTrayWnd", "");
+                        if (otherBars == IntPtr.Zero) { break; }
+                        else { hWndList.Add(otherBars); }
+                    }
+
+                    FindTaskbarHandles = false;
+                    ProcessWatcher.Process.NewExplorerStarted = false;
+                }
+
                 foreach (IntPtr hWnd in hWndList)
                 {
-                    SetWindowBlur(hWnd);
-                    Thread.Sleep(10);
+                    SetTaskbarStyle(hWnd);
                 }
+                Thread.Sleep(10);
             }
         }
 
-        private void SetWindowBlur(IntPtr hWnd)
+        private void SetTaskbarStyle(IntPtr hWnd)
         {
-
             int sizeOfPolicy = Marshal.SizeOf(accentPolicy);
             IntPtr policyPtr = Marshal.AllocHGlobal(sizeOfPolicy);
             Marshal.StructureToPtr(accentPolicy, policyPtr, false);
@@ -222,12 +238,34 @@ namespace TaskbarTool
             Marshal.FreeHGlobal(policyPtr);
         }
 
-        private void GetWindowsAccentColorLoop()
+        protected override void OnSourceInitialized(EventArgs e)
         {
-            while (RunAccentTask) {
-                accentPolicy.GradientColor = WindowsAccentColor.GetColorAsInt();
-                Thread.Sleep(900);
+            base.OnSourceInitialized(e);
+ 
+            IntPtr mainWindowPtr = new WindowInteropHelper(this).Handle;
+            HwndSource mainWindowSrc = HwndSource.FromHwnd(mainWindowPtr);
+            mainWindowSrc.AddHook(WndProc);
+        }
+ 
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_TASKBARCREATED)
+            {
+                FindTaskbarHandles = true;
+                handled = true;
+            } else if (msg == WM_DWMCOLORIZATIONCOLORCHANGED) {
+                accentPolicy.GradientColor = WindowsAccentColor.GetColorAsInt(); // TODO: use colour from wParam
+                handled = true;
             }
+ 
+            return IntPtr.Zero;
+        }
+
+        private void ApplyAlphaToWindowsAccent(byte alpha)
+        {
+            byte[] bytes = BitConverter.GetBytes(accentPolicy.GradientColor);
+            int colorInt = BitConverter.ToInt32(new byte[] { bytes[0], bytes[1], bytes[2], alpha }, 0);
+            accentPolicy.GradientColor = colorInt;
         }
 
         #endregion Functions
@@ -244,6 +282,8 @@ namespace TaskbarTool
             {
                 StartStopButton.Content = "Stop";
                 RunApplyTask = true;
+                if (WindowsAccentColorCheckBox.IsChecked == true) { accentPolicy.GradientColor = WindowsAccentColor.GetColorAsInt(); }
+
                 ApplyTask = new Task(() => ApplyToAllTaskbars());
                 ApplyTask.Start();
             }
@@ -281,15 +321,36 @@ namespace TaskbarTool
         {
             if (WindowsAccentColorCheckBox.IsChecked == true)
             {
+                accentPolicy.GradientColor = WindowsAccentColor.GetColorAsInt();
                 GradientColorPicker.IsEnabled = false;
-                RunAccentTask = true;
-                WindowsAccentColorTask = new Task(() => GetWindowsAccentColorLoop());
-                WindowsAccentColorTask.Start();
             }
             else
             {
-                RunAccentTask = false;
+                Color gradientColor = GradientColorPicker.SelectedColor ?? Color.FromArgb(255, 255, 255, 255);
+                accentPolicy.GradientColor = BitConverter.ToInt32(new byte[] { gradientColor.R, gradientColor.G, gradientColor.B, gradientColor.A }, 0);
                 GradientColorPicker.IsEnabled = true;
+            }
+        }
+
+        private void WindowsAccentAlphaSlider_DragCompleted(object sender, RoutedEventArgs e)
+        {
+            alphaDragStarted = false;
+            if (Properties.Settings.Default.UseWindowsAccentColor)
+            {
+                ApplyAlphaToWindowsAccent((byte)WindowsAccentAlphaSlider.Value);
+            }
+        }
+
+        private void WindowsAccentAlphaSlider_DragStarted(object sender, RoutedEventArgs e)
+        {
+            alphaDragStarted = true;
+        }
+
+        private void WindowsAccentAlphaSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (!alphaDragStarted && Properties.Settings.Default.UseWindowsAccentColor)
+            {
+                ApplyAlphaToWindowsAccent((byte)WindowsAccentAlphaSlider.Value);
             }
         }
 
@@ -300,23 +361,12 @@ namespace TaskbarTool
     public static class WindowsAccentColor
     {
         private static Color accentColor = Color.FromArgb(255, 0, 0, 0);
-        private static DateTime lastUpdateTime;
-        private static TimeSpan timeSinceLastUpdate;
-
-        public static Color GetColor()
-        {
-            timeSinceLastUpdate = DateTime.Now - lastUpdateTime;
-            if (timeSinceLastUpdate.TotalSeconds > 1)
-            { UpdateColor(); }
-
-            return accentColor;
-        }
 
         public static int GetColorAsInt()
         {
-            Color color = GetColor();
+            UpdateColor();
 
-            return BitConverter.ToInt32(new byte[] { color.R, color.G, color.B, Properties.Settings.Default.WindowsAccentAlpha }, 0);
+            return BitConverter.ToInt32(new byte[] { accentColor.R, accentColor.G, accentColor.B, Properties.Settings.Default.WindowsAccentAlpha }, 0);
         }
 
         private static void UpdateColor()
@@ -325,8 +375,7 @@ namespace TaskbarTool
             int keyColor = (int)Microsoft.Win32.Registry.GetValue(keyName, "StartColorMenu", 00000000);
 
             byte[] bytes = BitConverter.GetBytes(keyColor);
-
-            lastUpdateTime = DateTime.Now;
+            
             accentColor = Color.FromArgb(bytes[3], bytes[0], bytes[1], bytes[2]);
         }
     }
