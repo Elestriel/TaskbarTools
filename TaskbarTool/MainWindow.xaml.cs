@@ -198,9 +198,10 @@ namespace TaskbarTool
             
             while (RunApplyTask)
             {
-                if (FindTaskbarHandles || ProcessWatcher.Process.NewExplorerStarted)
+                if (FindTaskbarHandles)
                 {
                     hWndList.Add(FindWindow("Shell_TrayWnd", null));
+                    hWndList.Add(FindWindow(null, "Pins view"));
                     IntPtr otherBars = IntPtr.Zero;
 
                     //IntPtr cortana = FindWindowEx(hWndList[0], IntPtr.Zero, "TrayDummySearchControl", null);
@@ -214,7 +215,6 @@ namespace TaskbarTool
                     }
 
                     FindTaskbarHandles = false;
-                    ProcessWatcher.Process.NewExplorerStarted = false;
                 }
 
                 foreach (IntPtr hWnd in hWndList)
