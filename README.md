@@ -11,3 +11,4 @@ To download compiled binaries, head over to the Releases page: https://github.co
 - qwerty12 for his help with some Windows Hooks.
 - rameezv for the gorgeous new icon.
 - bigtreeworld for implementing said icon.
+- olliethepikachu for some great help with the maximised window deteciton.
