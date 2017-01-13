@@ -36,7 +36,7 @@ namespace TaskbarTool
 
         static System.Windows.Forms.NotifyIcon SysTrayIcon;
         ContextMenu SysTrayContextMenu;
-        
+
         private static bool alphaDragStarted = false;
         
         // Explorer restarts and Windows Accent Colour changes
@@ -59,11 +59,11 @@ namespace TaskbarTool
             SysTrayContextMenu = this.FindResource("TrayContextMenu") as ContextMenu;
 
             SysTrayIcon = new System.Windows.Forms.NotifyIcon();
-            Stream iconStream = Application.GetResourceStream(new Uri("Resources/Mushroom1UP.ico", UriKind.Relative)).Stream;
+            Stream iconStream = Application.GetResourceStream(new Uri("Resources/tt-logo.ico", UriKind.Relative)).Stream;
             SysTrayIcon.Icon = new System.Drawing.Icon(iconStream);
             SysTrayIcon.Visible = true;
             SysTrayIcon.MouseClick += SysTrayIcon_MouseClick;
-            SysTrayIcon.DoubleClick += 
+            SysTrayIcon.DoubleClick +=
                 delegate (object sender, EventArgs args)
                 {
                     this.Show();
@@ -186,12 +186,12 @@ namespace TaskbarTool
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
- 
+
             IntPtr mainWindowPtr = new WindowInteropHelper(this).Handle;
             HwndSource mainWindowSrc = HwndSource.FromHwnd(mainWindowPtr);
             mainWindowSrc.AddHook(WndProc);
         }
- 
+
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg == WM_TASKBARCREATED)
@@ -202,7 +202,7 @@ namespace TaskbarTool
                 Globals.WindowsAccentColor =  WindowsAccentColor.GetColorAsInt(); // TODO: use colour from wParam
                 handled = true;
             }
- 
+
             return IntPtr.Zero;
         }
 

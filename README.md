@@ -6,6 +6,8 @@ Feel free to branch and add features as you like!
 # Download
 To download compiled binaries, head over to the Releases page: https://github.com/Elestriel/TaskbarTools/releases
 
-# Credits 
-Reddit user IronManMark20 started a C++ project to make the Taskbar transparent.
-Elestriel then ported it to C#, slapped a UI on it, and added a few features.
+# Contributions
+- Reddit user IronManMark20 started a C++ project to make the Taskbar transparent.
+- qwerty12 for his help with some Windows Hooks.
+- rameezv for the gorgeous new icon.
+- bigtreeworld for implementing said icon.

@@ -9,7 +9,7 @@
         Title="Taskbar Tools" 
         Height="210" Width="370" 
         MinHeight="190" MinWidth="400"
-        Icon="Resources/Mushroom1UP.ico"
+        Icon="Resources/tt-logo.ico"
         ContentRendered="Window_ContentRendered" Closing="Window_Closing">
     <Window.Resources>
         <!-- Tray Icon ContextMenu -->
@@ -33,19 +33,19 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Label x:Name="AccentStateLabel" Content="Accent State" Grid.Column="0"
-                   HorizontalAlignment="Right" VerticalAlignment="Top" 
+                   HorizontalAlignment="Right" VerticalAlignment="Top"
                    HorizontalContentAlignment="Right"
                    Margin="0,10,0,0"/>
             <Label x:Name="GradientColorLabel" Content="Gradient Color" Grid.Column="0"
-                   HorizontalAlignment="Right" VerticalAlignment="Top" 
+                   HorizontalAlignment="Right" VerticalAlignment="Top"
                    HorizontalContentAlignment="Right"
                    Margin="0,37,0,0"/>
             <Label x:Name="ColorizeBlurLabel" Content="Colorize" Grid.Column="0"
-                   HorizontalAlignment="Right" VerticalAlignment="Top" 
+                   HorizontalAlignment="Right" VerticalAlignment="Top"
                    HorizontalContentAlignment="Right"
                    Margin="0,63,0,0"/>
             <Label x:Name="WindowsAccentOpacityLabel" Content="Windows Accent Alpha" Grid.Column="0"
-                   HorizontalAlignment="Right" VerticalAlignment="Top" 
+                   HorizontalAlignment="Right" VerticalAlignment="Top"
                    HorizontalContentAlignment="Right"
                    Margin="0,86,0,0" />
             <Button x:Name="EditSwitchButton" Content="Taskbar"  Grid.Column="0"
@@ -56,19 +56,19 @@
                 Click="EditSwitchButton_Click"/>
 
             <ComboBox x:Name="AccentStateComboBox" Grid.Column="1"
-                      HorizontalAlignment="Stretch" VerticalAlignment="Top" 
-                      Margin="0,14,10,0" 
+                      HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                      Margin="0,14,10,0"
                       SelectionChanged="AccentStateComboBox_SelectionChanged" />
             <xctk:ColorPicker x:Name="GradientColorPicker" Grid.Column="1"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="0,41,0,0" Width="50" 
-                              ColorMode="ColorCanvas" 
-                              ShowDropDownButton="False" 
+                              Margin="0,41,0,0" Width="50"
+                              ColorMode="ColorCanvas"
+                              ShowDropDownButton="False"
                               ShowAdvancedButton="False"
                               SelectedColorChanged="GradientColorPicker_SelectedColorChanged"/>
             <CheckBox x:Name="ColorizeBlurCheckBox" Grid.Column="1" Content=""
                       HorizontalAlignment="Left" VerticalAlignment="Top"
-                      Margin="0,69,0,0" 
+                      Margin="0,69,0,0"
                       Checked="ColorizeBlurCheckBox_Changed"
                       Unchecked="ColorizeBlurCheckBox_Changed"/>
             <CheckBox x:Name="WindowsAccentColorCheckBox" Grid.Column="1" Content="Use Windows Accent Colour"
