@@ -4,6 +4,22 @@
              xmlns:local="clr-namespace:TaskbarTool"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <!-- Hyperlink-like Button -->
+        <ControlTemplate x:Key="HyperlinkLikeButtonTemplate" TargetType="{x:Type Button}">
+            <TextBlock x:Name="innerText" Cursor="Hand">
+                <ContentPresenter />
+            </TextBlock>
+            <ControlTemplate.Triggers>
+                <Trigger Property="Button.IsMouseOver" Value="true">
+                    <Setter TargetName="innerText" Property="Opacity" Value=".8"/>
+                </Trigger>
+                <Trigger Property="Button.IsEnabled" Value="false">
+                    <Setter TargetName="innerText" Property="Opacity" Value=".8"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <Style x:Key="HyperlinkLikeButton" TargetType="{x:Type Button}">
+            <Setter Property="Template" Value="{StaticResource HyperlinkLikeButtonTemplate}" />
+        </Style>
     </Application.Resources>
 </Application>

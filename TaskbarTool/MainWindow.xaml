@@ -5,10 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TaskbarTool"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
-        xmlns:properties="clr-namespace:TaskbarTool.Properties"
         mc:Ignorable="d"
         Title="Taskbar Tools" 
-        Height="190" Width="370" 
+        Height="210" Width="370" 
         MinHeight="190" MinWidth="400"
         Icon="Resources/Mushroom1UP.ico"
         ContentRendered="Window_ContentRendered" Closing="Window_Closing">
@@ -22,10 +21,11 @@
             </ContextMenu.Items>
         </ContextMenu>
     </Window.Resources>
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="32"/>
+            <RowDefinition Height="0"/>
         </Grid.RowDefinitions>
         <Grid x:Name="AccentPolicyGrid" Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -47,7 +47,13 @@
             <Label x:Name="WindowsAccentOpacityLabel" Content="Windows Accent Alpha" Grid.Column="0"
                    HorizontalAlignment="Right" VerticalAlignment="Top" 
                    HorizontalContentAlignment="Right"
-                   Margin="0,86,250,0" Grid.ColumnSpan="2"/>
+                   Margin="0,86,0,0" />
+            <Button x:Name="EditSwitchButton" Content="Taskbar"  Grid.Column="0"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Margin="0,117,4,0"
+                Style="{StaticResource HyperlinkLikeButton}"
+                Foreground="#FF8080FF"
+                Click="EditSwitchButton_Click"/>
 
             <ComboBox x:Name="AccentStateComboBox" Grid.Column="1"
                       HorizontalAlignment="Stretch" VerticalAlignment="Top" 
@@ -68,29 +74,44 @@
             <CheckBox x:Name="WindowsAccentColorCheckBox" Grid.Column="1" Content="Use Windows Accent Colour"
                       HorizontalAlignment="Left" VerticalAlignment="Top"
                       Margin="55,43,0,0" 
-                      IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=UseWindowsAccentColor}"
                       Checked="WindowsAccentColorCheckBox_Changed"
                       Unchecked="WindowsAccentColorCheckBox_Changed"/>
             <Slider x:Name="WindowsAccentAlphaSlider" Grid.Column="1"
                     HorizontalAlignment="Stretch" VerticalAlignment="Top"
-                    Margin="10,92,10,0" Minimum="0" Maximum="255" Value="{Binding Source={x:Static properties:Settings.Default}, Path=WindowsAccentAlpha}"
+                    Margin="0,92,10,0" Minimum="0" Maximum="255"
                     Thumb.DragCompleted="WindowsAccentAlphaSlider_DragCompleted"
                     Thumb.DragStarted="WindowsAccentAlphaSlider_DragStarted"
                     ValueChanged="WindowsAccentAlphaSlider_ValueChanged"/>
         </Grid>
-        <Grid x:Name="OptionsGrid" Grid.Row="1">
-        </Grid>
-        <Grid x:Name="ControlsGrid" Grid.Row="2">
-            <CheckBox x:Name="StartMinimizedCheckBox" Content="Start Minimized"
-                      HorizontalAlignment="Left" VerticalAlignment="Top"
-                      Margin="10,5,0,0" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=StartMinimized}"/>
-            <CheckBox x:Name="StartWhenLaunchedCheckBox" Content="Start When Launched"
-                      HorizontalAlignment="Left" VerticalAlignment="Top"
-                      Margin="126,5,0,0" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=StartWhenLaunched}"/>
+        <Grid x:Name="ControlsGrid" Grid.Row="1">
             <Button x:Name="StartStopButton" Content="Start" 
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Margin="0,0,10,10" Width="75" 
+                    Margin="0,0,10,5" Width="75" 
                     Click="StartStopButton_Click"/>
+            <Button x:Name="OptionsButton" Content="Options" 
+                    HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                    Margin="10,0,0,7" Width="75" 
+                    Style="{StaticResource HyperlinkLikeButton}"
+                    Foreground="#FF8080FF"
+                    Click="OptionsButton_Click"/>
+        </Grid>
+        <Grid x:Name="OptionsGrid" Grid.Row="2">
+            <CheckBox x:Name="StartMinimizedCheckBox" Content="Start Minimized"
+                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Margin="10,5,0,0" />
+            <CheckBox x:Name="StartWhenLaunchedCheckBox" Content="Apply Settings When Started"
+                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Margin="10,25,0,0" />
+            <CheckBox x:Name="UseMaximizedSettingsCheckBox" Content="Use Different Settings when a Window is Maximized"
+                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Margin="10,65,0,0" 
+                      Checked="UseMaximizedSettingsCheckBox_Changed"
+                      Unchecked="UseMaximizedSettingsCheckBox_Changed"/>
+            <CheckBox x:Name="StartWithWindowsCheckBox" Content="Start With Windows"
+                      HorizontalAlignment="Left" VerticalAlignment="Top"
+                      Margin="10,45,0,0" 
+                      Checked="StartWithWindowsCheckBox_Changed"
+                      Unchecked="StartWithWindowsCheckBox_Changed"/>
         </Grid>
     </Grid>
 </Window>

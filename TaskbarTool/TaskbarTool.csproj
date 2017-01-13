@@ -72,6 +72,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\Constants.cs" />
+    <Compile Include="Helpers\Enums.cs" />
+    <Compile Include="Helpers\Externals.cs" />
+    <Compile Include="Helpers\Globals.cs" />
+    <Compile Include="Helpers\Options.cs" />
+    <Compile Include="Helpers\Structs.cs" />
+    <Compile Include="Helpers\WindowsAccentColor.cs" />
+    <Compile Include="Taskbar\Taskbar.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
