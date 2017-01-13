@@ -86,14 +86,14 @@ namespace TaskbarTool
         static Task ApplyTask;
         static bool RunApplyTask = false;
         public static bool FindTaskbarHandles = true;
-        
+
         static System.Windows.Forms.NotifyIcon SysTrayIcon;
         ContextMenu SysTrayContextMenu;
-        
+
         private static bool alphaDragStarted = false;
 
         static AccentPolicy accentPolicy = new AccentPolicy();
-        
+
         private static readonly uint WM_TASKBARCREATED = RegisterWindowMessage("TaskbarCreated");
         private const uint WM_DWMCOLORIZATIONCOLORCHANGED = 0x0320;
         #endregion Declarations
@@ -106,11 +106,11 @@ namespace TaskbarTool
             SysTrayContextMenu = this.FindResource("TrayContextMenu") as ContextMenu;
 
             SysTrayIcon = new System.Windows.Forms.NotifyIcon();
-            Stream iconStream = Application.GetResourceStream(new Uri("Resources/Mushroom1UP.ico", UriKind.Relative)).Stream;
+            Stream iconStream = Application.GetResourceStream(new Uri("Resources/tt-logo.ico", UriKind.Relative)).Stream;
             SysTrayIcon.Icon = new System.Drawing.Icon(iconStream);
             SysTrayIcon.Visible = true;
             SysTrayIcon.MouseClick += SysTrayIcon_MouseClick;
-            SysTrayIcon.DoubleClick += 
+            SysTrayIcon.DoubleClick +=
                 delegate (object sender, EventArgs args)
                 {
                     this.Show();
@@ -195,7 +195,7 @@ namespace TaskbarTool
         private void ApplyToAllTaskbars()
         {
             List<IntPtr> hWndList = new List<IntPtr>();
-            
+
             while (RunApplyTask)
             {
                 if (FindTaskbarHandles || ProcessWatcher.Process.NewExplorerStarted)
@@ -241,12 +241,12 @@ namespace TaskbarTool
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
- 
+
             IntPtr mainWindowPtr = new WindowInteropHelper(this).Handle;
             HwndSource mainWindowSrc = HwndSource.FromHwnd(mainWindowPtr);
             mainWindowSrc.AddHook(WndProc);
         }
- 
+
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg == WM_TASKBARCREATED)
@@ -257,7 +257,7 @@ namespace TaskbarTool
                 accentPolicy.GradientColor = WindowsAccentColor.GetColorAsInt(); // TODO: use colour from wParam
                 handled = true;
             }
- 
+
             return IntPtr.Zero;
         }
 
@@ -375,7 +375,7 @@ namespace TaskbarTool
             int keyColor = (int)Microsoft.Win32.Registry.GetValue(keyName, "StartColorMenu", 00000000);
 
             byte[] bytes = BitConverter.GetBytes(keyColor);
-            
+
             accentColor = Color.FromArgb(bytes[3], bytes[0], bytes[1], bytes[2]);
         }
     }
