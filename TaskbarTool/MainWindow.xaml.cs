@@ -45,6 +45,8 @@ namespace TaskbarTool
         // Window state hook
         private static Externals.WinEventDelegate procDelegate = new Externals.WinEventDelegate(WinEventProc);
         private static IntPtr WindowStateHook;
+        private static IntPtr LastClosedWindow;
+        private static DateTime LastClosedWindowTime;
 
         // Start with Windows registry key
         RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
@@ -207,37 +209,52 @@ namespace TaskbarTool
         }
 
         static void WinEventProc(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
-        {            
-            if (idObject != 0 || idChild != 0) { return; }
+        {
+            //if ((idObject != 0 || idChild != 0) { return; }
             
             WindowPlacement placement = new WindowPlacement();
             placement.length = Marshal.SizeOf(placement);
             Externals.GetWindowPlacement(hwnd, ref placement);
 
-            if (placement.showCmd == WindowPlacementCommands.SW_MAXIMIZE || placement.showCmd == WindowPlacementCommands.SW_SHOWMAXIMIZED)
+            // Window is closing
+            if (idObject == -2 && idChild == 5)
+            {
+                if (MaximizedWindows.Contains(hwnd))
+                {
+                    LastClosedWindow = hwnd;
+                    LastClosedWindowTime = DateTime.Now;
+                    MaximizedWindows.Remove(hwnd);
+                    Taskbars.MaximizedStateChanged = true;
+                }
+            }
+            else if (placement.showCmd == WindowPlacementCommands.SW_MAXIMIZE || placement.showCmd == WindowPlacementCommands.SW_SHOWMAXIMIZED)
             {
                 if (!MaximizedWindows.Contains(hwnd))
                 {
-                    Taskbars.MaximizedStateChanged = true;
+                    if (LastClosedWindow == hwnd && ((TimeSpan)(DateTime.Now - LastClosedWindowTime)).TotalSeconds < 1) { return; }
+
                     MaximizedWindows.Add(hwnd);
+                    Taskbars.MaximizedStateChanged = true;
                 }
             }
             else if (placement.showCmd == WindowPlacementCommands.SW_NORMAL)
             {
                 if (MaximizedWindows.Contains(hwnd))
                 {
-                    Taskbars.MaximizedStateChanged = true;
                     MaximizedWindows.Remove(hwnd);
+                    Taskbars.MaximizedStateChanged = true;
                 }
             }
             else if (placement.showCmd == WindowPlacementCommands.SW_SHOWMINIMIZED || placement.showCmd == WindowPlacementCommands.SW_MINIMIZE)
             {
                 if (MaximizedWindows.Contains(hwnd))
                 {
-                    Taskbars.MaximizedStateChanged = true;
                     MaximizedWindows.Remove(hwnd);
+                    Taskbars.MaximizedStateChanged = true;
                 }
             }
+
+
         }
 
         private void UpdateAllSettings()
