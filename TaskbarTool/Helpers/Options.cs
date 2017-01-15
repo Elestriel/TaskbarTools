@@ -10,29 +10,25 @@ namespace TaskbarTool
         public static Options Options = new Options();
 
         // My Documents
-        private static string MyDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        private static string FilePath = MyDocuments + "\\TaskbarTools\\Options.xml";
+        private static readonly string MyDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        private static readonly string FilePath = MyDocuments + "\\TaskbarTools\\Options.xml";
 
         public static void InitializeOptions()
         {
             if (!LoadOptions())
-            {
                 AssignDefaults();
-            }
         }
 
         public static bool SaveOptions()
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(Options));
+            var serializer = new XmlSerializer(typeof(Options));
 
             try
             {
                 if (!Directory.Exists(Path.GetDirectoryName(FilePath)))
-                {
                     Directory.CreateDirectory(Path.GetDirectoryName(FilePath));
-                }
 
-                using (FileStream fstream = new FileStream(FilePath, FileMode.Create))
+                using (var fstream = new FileStream(FilePath, FileMode.Create))
                 {
                     serializer.Serialize(fstream, Options);
                 }
@@ -46,12 +42,12 @@ namespace TaskbarTool
 
         private static bool LoadOptions()
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(Options));
-            if (!File.Exists(FilePath)) { return false; }
+            var serializer = new XmlSerializer(typeof(Options));
+            if (!File.Exists(FilePath)) return false;
 
             try
             {
-                using (FileStream reader = new FileStream(FilePath, FileMode.Open))
+                using (var reader = new FileStream(FilePath, FileMode.Open))
                 {
                     Options = serializer.Deserialize(reader) as Options;
                 }
@@ -67,25 +63,31 @@ namespace TaskbarTool
 
         private static void AssignDefaults()
         {
-            Options.Settings = new OptionsSettings();
-            Options.Settings.StartMinimized = false;
-            Options.Settings.StartWhenLaunched = true;
-            Options.Settings.StartWithWindows = false;
-            Options.Settings.UseDifferentSettingsWhenMaximized = true;
+            Options.Settings = new OptionsSettings
+            {
+                StartMinimized = false,
+                StartWhenLaunched = true,
+                StartWithWindows = false,
+                UseDifferentSettingsWhenMaximized = true,
+                MainTaskbarStyle = new OptionsSettingsMainTaskbarStyle
+                {
+                    AccentState = 3,
+                    GradientColor = "#804080FF",
+                    Colorize = true,
+                    UseWindowsAccentColor = true,
+                    WindowsAccentAlpha = 127
+                },
+                MaximizedTaskbarStyle = new OptionsSettingsMaximizedTaskbarStyle
+                {
+                    AccentState = 2,
+                    GradientColor = "#FF000000",
+                    Colorize = false,
+                    UseWindowsAccentColor = true,
+                    WindowsAccentAlpha = 255
+                }
+            };
 
-            Options.Settings.MainTaskbarStyle = new OptionsSettingsMainTaskbarStyle();
-            Options.Settings.MainTaskbarStyle.AccentState = 3;
-            Options.Settings.MainTaskbarStyle.GradientColor = "#804080FF";
-            Options.Settings.MainTaskbarStyle.Colorize = true;
-            Options.Settings.MainTaskbarStyle.UseWindowsAccentColor = true;
-            Options.Settings.MainTaskbarStyle.WindowsAccentAlpha = 127;
 
-            Options.Settings.MaximizedTaskbarStyle = new OptionsSettingsMaximizedTaskbarStyle();
-            Options.Settings.MaximizedTaskbarStyle.AccentState = 2;
-            Options.Settings.MaximizedTaskbarStyle.GradientColor = "#FF000000";
-            Options.Settings.MaximizedTaskbarStyle.Colorize = false;
-            Options.Settings.MaximizedTaskbarStyle.UseWindowsAccentColor = true;
-            Options.Settings.MaximizedTaskbarStyle.WindowsAccentAlpha = 255;
         }
     }
 

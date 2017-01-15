@@ -21,11 +21,11 @@ namespace TaskbarTool
         
         public static void ApplyStyles(Taskbar taskbar)
         {
-            int sizeOfPolicy = Marshal.SizeOf(taskbar.AccentPolicy);
-            IntPtr policyPtr = Marshal.AllocHGlobal(sizeOfPolicy);
+            var sizeOfPolicy = Marshal.SizeOf(taskbar.AccentPolicy);
+            var policyPtr = Marshal.AllocHGlobal(sizeOfPolicy);
             Marshal.StructureToPtr(taskbar.AccentPolicy, policyPtr, false);
 
-            WinCompatTrData data = new WinCompatTrData(WindowCompositionAttribute.WCA_ACCENT_POLICY, policyPtr, sizeOfPolicy);
+            var data = new WinCompatTrData(WindowCompositionAttribute.WCA_ACCENT_POLICY, policyPtr, sizeOfPolicy);
 
             Externals.SetWindowCompositionAttribute(taskbar.HWND, ref data);
 
@@ -34,16 +34,14 @@ namespace TaskbarTool
 
         public static void UpdateMaximizedState()
         {
-            foreach (Taskbar tb in Bars)
-            {
+            foreach (var tb in Bars)
                 tb.FindMaximizedWindowsHere();
-            }
             MaximizedStateChanged = false;
         }
 
         public static void UpdateAllSettings()
         {
-            foreach (Taskbar tb in Bars)
+            foreach (var tb in Bars)
             {
                 if (tb.HasMaximizedWindow && TT.Options.Settings.UseDifferentSettingsWhenMaximized) { tbType = "Maximized"; }
                 else { tbType = "Main"; }
@@ -56,21 +54,22 @@ namespace TaskbarTool
 
         public static void UpdateAccentState()
         {
-            foreach (Taskbar tb in Bars)
+            foreach (var tb in Bars)
             {
-                if (tb.HasMaximizedWindow && TT.Options.Settings.UseDifferentSettingsWhenMaximized) { tbType = "Maximized"; }
-                else { tbType = "Main"; }
-
+                tbType = tb.HasMaximizedWindow && TT.Options.Settings.UseDifferentSettingsWhenMaximized
+                    ? "Maximized"
+                    : "Main";
                 tb.AccentPolicy.AccentState = Globals.GetAccentState(tbType);
             }
         }
 
         public static void UpdateAccentFlags()
         {
-            foreach (Taskbar tb in Bars)
+            foreach (var tb in Bars)
             {
-                if (tb.HasMaximizedWindow && TT.Options.Settings.UseDifferentSettingsWhenMaximized) { tbType = "Maximized"; }
-                else { tbType = "Main"; }
+                tbType = tb.HasMaximizedWindow && TT.Options.Settings.UseDifferentSettingsWhenMaximized
+                    ? "Maximized"
+                    : "Main";
 
                 tb.AccentPolicy.AccentFlags = Globals.GetAccentFlags(tbType);
             }
@@ -78,10 +77,11 @@ namespace TaskbarTool
 
         public static void UpdateColor()
         {
-            foreach (Taskbar tb in Bars)
+            foreach (var tb in Bars)
             {
-                if (tb.HasMaximizedWindow && TT.Options.Settings.UseDifferentSettingsWhenMaximized) { tbType = "Maximized"; }
-                else { tbType = "Main"; }
+                tbType = tb.HasMaximizedWindow && TT.Options.Settings.UseDifferentSettingsWhenMaximized
+                    ? "Maximized"
+                    : "Main";
 
                 tb.AccentPolicy.GradientColor = Globals.GetTaskbarColor(tbType);
             }
@@ -107,17 +107,16 @@ namespace TaskbarTool
 
         public void FindMaximizedWindowsHere()
         {
-            bool isInThisScreen = false;
+            var isInThisScreen = false;
             IntPtr thisAppMonitor;
 
-            foreach (IntPtr hwnd in Globals.MaximizedWindows)
+            foreach (var hwnd in Globals.MaximizedWindows)
             {
                 thisAppMonitor = Externals.MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
                 if (Monitor == thisAppMonitor) { isInThisScreen = true; }
             }
 
             HasMaximizedWindow = isInThisScreen;
-            return;
         }
     }
 }
