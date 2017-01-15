@@ -16,10 +16,10 @@ namespace TaskbarTool
 
         private static void UpdateColor()
         {
-            string keyName = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent";
-            int keyColor = (int)Microsoft.Win32.Registry.GetValue(keyName, "StartColorMenu", 00000000);
+            var keyName = "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent";
+            var keyColor = (int)Microsoft.Win32.Registry.GetValue(keyName, "StartColorMenu", 00000000);
 
-            byte[] bytes = BitConverter.GetBytes(keyColor);
+            var bytes = BitConverter.GetBytes(keyColor);
 
             accentColor = Color.FromArgb(bytes[3], bytes[0], bytes[1], bytes[2]);
         }
